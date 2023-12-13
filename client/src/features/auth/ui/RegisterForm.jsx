@@ -8,7 +8,7 @@ import {
 } from "@nextui-org/react";
 import { useForm } from "react-hook-form";
 import { validationData } from "../consts/formValidationData";
-import { useRegisterUser } from "../hooks/useRegisterUser";
+import { useRegisterUser } from "entities/auth";
 
 export const RegisterForm = () => {
   const {
@@ -17,12 +17,11 @@ export const RegisterForm = () => {
     formState: { errors },
   } = useForm();
 
-  const { error, isLoading, registerUser, user } = useRegisterUser();
+  const { isLoading, registerUser } = useRegisterUser();
 
   const onSubmit = (data) => {
     registerUser(data);
   };
-  console.log("user", user);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

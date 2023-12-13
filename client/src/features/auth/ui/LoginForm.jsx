@@ -9,7 +9,7 @@ import {
 import { useForm } from "react-hook-form";
 
 import { validationData } from "../consts/formValidationData";
-import { useLoginUser } from "../hooks/useLoginUser";
+import { useLoginUser } from "entities/auth";
 
 export const LoginForm = () => {
   const {
@@ -18,13 +18,11 @@ export const LoginForm = () => {
     formState: { errors },
   } = useForm();
 
-  const { error, isLoading, loginUser, user } = useLoginUser();
+  const { isLoading, loginUser } = useLoginUser();
 
   const onSubmit = (data) => {
     loginUser(data);
   };
-
-  console.log("USER", user);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -36,7 +34,7 @@ export const LoginForm = () => {
         <CardBody className="gap-4">
           <Input
             errorMessage={errors.email?.message}
-            {...register("email", validationData.email)}
+            {...register("email")}
             label="Email"
             type="email"
           />
@@ -48,7 +46,7 @@ export const LoginForm = () => {
         </CardBody>
 
         <CardFooter>
-          <Button type="submit" fullWidth color="primary">
+          <Button isLoading={isLoading} type="submit" fullWidth color="primary">
             Sign In
           </Button>
         </CardFooter>

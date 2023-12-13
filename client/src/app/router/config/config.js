@@ -3,6 +3,7 @@ import { LoginPage } from "pages/LoginPage";
 import { RegisterPage } from "pages/RegisterPage/ui/RegisterPage";
 import { ChatPage } from "pages/ChatPage";
 import { NavbarLayout } from "../ui/NavbarLayout";
+import { ProtectedRoute } from "../ui/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -19,7 +20,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/chat",
-        element: <ChatPage />,
+        element: (
+          <ProtectedRoute>
+            <ChatPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
