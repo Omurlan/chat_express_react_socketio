@@ -1,7 +1,5 @@
-
+import { LoginForm } from "features/auth";
 
 export const LoginPage = () => {
-    return (
-        <h1>LOGIN</h1>
-    )
-}
+  return <LoginForm />;
+};

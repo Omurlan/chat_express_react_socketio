@@ -1,31 +1,32 @@
-const express = require("express")
-const cors = require("cors")
-const mongoose = require("mongoose").default
-const userRoute = require("./routes/userRoute")
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose").default;
+const userRoute = require("./routes/userRoute");
 
-require("dotenv").config()
+require("dotenv").config();
 
-const app = express()
+const app = express();
 
-app.use(express.json())
-app.use(cors())
-app.use("/api/users", userRoute)
+app.use(express.json());
+app.use(cors());
+app.use("/api/users", userRoute);
 
 app.get("/", (req, res) => {
-    res.send("Here is chat API")
-})
+  res.send("Here is chat API");
+});
 
-const port = process.env.PORT || 8000
-const uri = process.env.MONGODB_URI
+const port = process.env.PORT || 8000;
+const uri = process.env.MONGODB_URI;
 
 app.listen(port, (req, res) => {
-    console.log(`SERVER RUNNING ON PORT ${port}`)
-})
+  console.log(`SERVER RUNNING ON PORT ${port}`);
+});
 
-mongoose.connect(uri)
-    .then(() => {
-        console.log("MongoDB connected")
-    })
-    .catch((error) => {
-        console.log("MongoDB connection failed", error.message)
-    })
+mongoose
+  .connect(uri)
+  .then(() => {
+    console.log("MongoDB connected");
+  })
+  .catch((error) => {
+    console.log("MongoDB connection failed", error.message);
+  });
