@@ -27,6 +27,7 @@ const get = async (url) => {
     return error;
   }
 };
+
 const post = async (url, body) => {
   try {
     const response = await fetch(baseUrl + url, {

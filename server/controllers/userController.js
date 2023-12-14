@@ -55,8 +55,6 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log(email, password);
-
     const user = await userModel.findOne({ email });
 
     if (!user) {
@@ -70,6 +68,8 @@ const loginUser = async (req, res) => {
     }
 
     const token = createToken(user._id);
+
+    console.log("user", user);
 
     res.json({ _id: user._id, email, token });
   } catch (error) {

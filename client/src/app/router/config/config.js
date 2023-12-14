@@ -1,13 +1,23 @@
 import { createBrowserRouter } from "react-router-dom";
 import { LoginPage } from "pages/LoginPage";
-import { RegisterPage } from "pages/RegisterPage/ui/RegisterPage";
+import { RegisterPage } from "pages/RegisterPage";
 import { ChatPage } from "pages/ChatPage";
-import { NavbarLayout } from "../ui/NavbarLayout";
-import { ProtectedRoute } from "../ui/ProtectedRoute";
+import { AuthLayout } from "../ui/AuthLayout";
+import { NonAuthLayout } from "../ui/NonAuthLayout";
 
 export const router = createBrowserRouter([
   {
-    element: <NavbarLayout />,
+    element: <AuthLayout />,
+    errorElement: <h1>Page does not exist</h1>,
+    children: [
+      {
+        path: "/chat",
+        element: <ChatPage />,
+      },
+    ],
+  },
+  {
+    element: <NonAuthLayout />,
     errorElement: <h1>Page does not exist</h1>,
     children: [
       {
@@ -17,14 +27,6 @@ export const router = createBrowserRouter([
       {
         path: "/register",
         element: <RegisterPage />,
-      },
-      {
-        path: "/chat",
-        element: (
-          <ProtectedRoute>
-            <ChatPage />
-          </ProtectedRoute>
-        ),
       },
     ],
   },

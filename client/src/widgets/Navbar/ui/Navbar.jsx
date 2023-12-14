@@ -6,14 +6,13 @@ import {
   Button,
 } from "@nextui-org/react";
 
-import { useGetUser, useUserMethods } from "entities/auth";
+import { useUser } from "entities/auth";
 import { memo } from "react";
 
 import { Link } from "react-router-dom";
 
 export const Navbar = memo(() => {
-  const user = useGetUser();
-  const { logout } = useUserMethods();
+  const { user, logoutUser } = useUser();
 
   return (
     <NNavbar>
@@ -24,7 +23,7 @@ export const Navbar = memo(() => {
       <NavbarContent justify="end">
         {user ? (
           <NavbarItem>
-            <Button onClick={logout} color="danger" variant="flat">
+            <Button onClick={logoutUser} color="danger" variant="flat">
               Logout
             </Button>
           </NavbarItem>

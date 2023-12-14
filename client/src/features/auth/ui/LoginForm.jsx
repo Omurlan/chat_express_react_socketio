@@ -9,7 +9,7 @@ import {
 import { useForm } from "react-hook-form";
 
 import { validationData } from "../consts/formValidationData";
-import { useLoginUser } from "entities/auth";
+import { useUser } from "entities/auth";
 
 export const LoginForm = () => {
   const {
@@ -18,7 +18,7 @@ export const LoginForm = () => {
     formState: { errors },
   } = useForm();
 
-  const { isLoading, loginUser } = useLoginUser();
+  const { isLoading, loginUser } = useUser();
 
   const onSubmit = (data) => {
     loginUser(data);
