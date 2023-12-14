@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose").default;
 const userRoute = require("./routes/userRoute");
+const chatRoute = require("./routes/chatRoute");
 
 require("dotenv").config();
 
@@ -10,6 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use("/api/users", userRoute);
+app.use("/api/chats", chatRoute);
 
 app.get("/", (req, res) => {
   res.send("Here is chat API");
