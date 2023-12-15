@@ -2,12 +2,12 @@ import { useContext } from "react";
 import { ChatContext } from "shared/contexts";
 
 export const useChatCreate = () => {
-  const { chatCreate, chatCreateIsLoading, chatCreateError } =
-    useContext(ChatContext);
+  const { chats, chatCreate } = useContext(ChatContext);
+  const { isCreating, createError } = chats;
 
   return {
-    isLoading: chatCreateIsLoading,
+    isLoading: isCreating,
     chatCreate,
-    error: chatCreateError,
+    error: createError,
   };
 };

@@ -6,6 +6,11 @@ import { useUser } from "entities/auth";
 import { createReducer } from "../utils/createReducer";
 
 const initialState = {
+  currentChat: {
+    data: null,
+    error: null,
+    isLoading: false,
+  },
   chats: {
     data: null,
     error: null,
@@ -28,7 +33,18 @@ const reducer = createReducer(initialState, {
   setNewChat: ({ chats }, action) => {
     chats.data = [...chats.data, action.payload];
   },
-
+  setCurrentChat: ({ currentChat }, action) => {
+    currentChat.data = action.payload;
+    currentChat.isLoading = false;
+  },
+  currentChatIsLoading: ({ currentChat }) => {
+    currentChat.isLoading = true;
+    currentChat.error = null;
+  },
+  currentChatError: ({ currentChat }, action) => {
+    currentChat.isLoading = false;
+    currentChat.error = action.payload;
+  },
   chatsIsLoading: ({ chats }) => {
     chats.error = null;
     chats.isLoading = true;
@@ -85,6 +101,7 @@ const reducer = createReducer(initialState, {
   resetState: (state) => {
     state.chats = initialState.chats;
     state.usersToChat = initialState.usersToChat;
+    state.currentChat = initialState.currentChat;
   },
 });
 
@@ -111,6 +128,21 @@ export const ChatProvider = ({ children }) => {
     },
     [user]
   );
+
+  const currentChatMessagesFetch = useCallback(async ({ _id, members }) => {
+    dispatch({ type: "currentChatIsLoading" });
+
+    try {
+      const response = await api.get(`/chats/${_id}`);
+
+      dispatch({
+        type: "setCurrentChat",
+        payload: { messsages: response, members, _id },
+      });
+    } catch (error) {
+      dispatch({ type: "currentChatError", payload: error.message });
+    }
+  }, []);
 
   const usersToChatFetch = useCallback(async () => {
     dispatch({ type: "usersToChatIsLoading" });
@@ -155,16 +187,12 @@ export const ChatProvider = ({ children }) => {
   return (
     <ChatContext.Provider
       value={{
-        chats: state.chats.data,
-        chatsIsLoading: state.chats.isLoading,
-        chatsError: state.chats.error,
-        chatCreateIsLoading: state.chats.isCreating,
-        chatCreateError: state.chats.createError,
+        currentChat: state.currentChat,
+        chats: state.chats,
+        usersToChat: state.usersToChat,
         chatsFetch,
         chatCreate,
-        usersToChat: state.usersToChat.data,
-        usersToChatIsLoading: state.usersToChat.isLoading,
-        usersToChatError: state.usersToChat.error,
+        currentChatMessagesFetch,
       }}
     >
       {children}

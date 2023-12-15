@@ -3,13 +3,17 @@ import { memo } from "react";
 import { useFindRecipient } from "../hooks/useFindRecipient";
 
 export const ChatCard = memo((props) => {
-  const { lastMessage, lastDate, members, unread } = props;
+  const { chatId, lastMessage, lastDate, members, unread, onClick } = props;
 
   const recipient = useFindRecipient(members);
 
+  const handleClick = () => {
+    onClick({ _id: chatId, members });
+  };
+
   return (
     <Card>
-      <CardHeader className="justify-between">
+      <CardHeader onClick={handleClick} className="justify-between">
         <div className="flex gap-5">
           <Badge showOutline={false} size="sm" content={unread} color="danger">
             <Avatar
@@ -30,7 +34,7 @@ export const ChatCard = memo((props) => {
         <p className="text-xs text-slate-500 font-medium">{lastDate}</p>
       </CardHeader>
 
-      <CardBody className="pt-0">
+      <CardBody onClick={handleClick} className="pt-0">
         <p className="text-slate-700">{lastMessage}</p>
       </CardBody>
     </Card>

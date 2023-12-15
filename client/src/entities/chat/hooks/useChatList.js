@@ -2,8 +2,9 @@ import { useContext, useEffect } from "react";
 import { ChatContext } from "shared/contexts";
 
 export const useChatList = (userId) => {
-  const { chats, chatsIsLoading, chatsError, chatsFetch } =
-    useContext(ChatContext);
+  const { chats, chatsFetch } = useContext(ChatContext);
+
+  const { isLoading, error, data } = chats;
 
   useEffect(() => {
     if (userId) {
@@ -12,8 +13,8 @@ export const useChatList = (userId) => {
   }, [userId]);
 
   return {
-    chats,
-    isLoading: chatsIsLoading,
-    error: chatsError,
+    chats: data,
+    isLoading,
+    error,
   };
 };

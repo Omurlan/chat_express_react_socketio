@@ -1,26 +1,19 @@
-import { useUser } from "entities/auth";
-import { ChatCard, useChatList } from "entities/chat";
 import { UsersToChatList } from "./UsersToChatList/UsersToChatList";
+import { ChatList } from "./ChatList/ChatList";
+import { ChatBox } from "./ChatBox/ChatBox";
+import { useState } from "react";
 
 export const ChatWidget = () => {
-  const { user } = useUser();
-
-  const { chats } = useChatList(user._id);
+  const [selectedChatInfo, setSelectedChatInfo] = useState(null);
 
   return (
     <div>
       <UsersToChatList />
 
-      <div className="max-w-[350px] flex flex-col gap-3">
-        {chats &&
-          chats.map(({ _id, members }) => (
-            <ChatCard
-              key={_id}
-              members={members}
-              lastMessage="How you doing ?"
-              lastDate="2023-12-13"
-            />
-          ))}
+      <div className="flex gap-10">
+        <ChatList onClick={setSelectedChatInfo} />
+
+        <ChatBox selectedChatInfo={selectedChatInfo} />
       </div>
     </div>
   );
