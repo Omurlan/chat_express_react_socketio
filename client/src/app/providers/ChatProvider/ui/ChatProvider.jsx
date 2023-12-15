@@ -1,15 +1,17 @@
 import { ChatContext } from "shared/contexts";
 
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { api } from "shared/api";
 import { useUser } from "entities/auth";
 import { createReducer } from "../utils/createReducer";
 
 const initialState = {
-  currentChat: {
+  currentChatMessages: {
     data: null,
     error: null,
     isLoading: false,
+    isSending: false,
+    sendError: null,
   },
   chats: {
     data: null,
@@ -33,18 +35,33 @@ const reducer = createReducer(initialState, {
   setNewChat: ({ chats }, action) => {
     chats.data = [...chats.data, action.payload];
   },
-  setCurrentChat: ({ currentChat }, action) => {
-    currentChat.data = action.payload;
-    currentChat.isLoading = false;
+
+  setCurrentChatMessages: ({ currentChatMessages }, action) => {
+    currentChatMessages.data = action.payload;
+    currentChatMessages.isLoading = false;
   },
-  currentChatIsLoading: ({ currentChat }) => {
-    currentChat.isLoading = true;
-    currentChat.error = null;
+
+  currentChatMessagesIsLoading: (state) => {
+    state.currentChatMessages.isLoading = true;
+    state.currentChatMessages.error = null;
   },
-  currentChatError: ({ currentChat }, action) => {
-    currentChat.isLoading = false;
-    currentChat.error = action.payload;
+  currentChatMessagesError: ({ currentChatMessages }, action) => {
+    currentChatMessages.isLoading = false;
+    currentChatMessages.error = action.payload;
   },
+  updateCurrentChatMessages: (state, action) => {
+    state.currentChatMessages.data = [
+      ...state.currentChatMessages.data,
+      action.payload,
+    ];
+  },
+  currentChatMessagesIsSending: (state) => {
+    state.currentChatMessages.isSending = true;
+  },
+  currentChatMessagesSendError: (state, action) => {
+    state.currentChatMessages.sendError = action.payload;
+  },
+
   chatsIsLoading: ({ chats }) => {
     chats.error = null;
     chats.isLoading = true;
@@ -108,6 +125,8 @@ const reducer = createReducer(initialState, {
 export const ChatProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const [currentChat, setCurrentChat] = useState(null);
+
   const { user } = useUser();
 
   const chatsFetch = useCallback(
@@ -129,18 +148,36 @@ export const ChatProvider = ({ children }) => {
     [user]
   );
 
-  const currentChatMessagesFetch = useCallback(async ({ _id, members }) => {
-    dispatch({ type: "currentChatIsLoading" });
+  const messageSend = useCallback(async ({ chatId, senderId, text }) => {
+    dispatch({ type: "currentChatMessagesIsSending" });
 
     try {
-      const response = await api.get(`/chats/${_id}`);
+      const response = await api.post(`/messages`, {
+        chatId,
+        senderId,
+        text,
+      });
+
+      dispatch({ type: "updateCurrentChatMessages", payload: response });
+    } catch (error) {
+      dispatch({ type: "currentChatMessagesError" });
+    }
+  }, []);
+
+  const currentChatMessagesFetch = useCallback(async ({ _id, members }) => {
+    dispatch({ type: "currentChatMessagesIsLoading" });
+
+    try {
+      const response = await api.get(`/messages/${_id}`);
+
+      setCurrentChat({ members, _id });
 
       dispatch({
-        type: "setCurrentChat",
-        payload: { messsages: response, members, _id },
+        type: "setCurrentChatMessages",
+        payload: response,
       });
     } catch (error) {
-      dispatch({ type: "currentChatError", payload: error.message });
+      dispatch({ type: "currentChatMessagesError", payload: error.message });
     }
   }, []);
 
@@ -187,9 +224,11 @@ export const ChatProvider = ({ children }) => {
   return (
     <ChatContext.Provider
       value={{
-        currentChat: state.currentChat,
+        currentChat,
+        currentChatMessages: state.currentChatMessages,
         chats: state.chats,
         usersToChat: state.usersToChat,
+        messageSend,
         chatsFetch,
         chatCreate,
         currentChatMessagesFetch,

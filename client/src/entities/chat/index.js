@@ -5,3 +5,4 @@ export { UserToChatCard } from "./ui/UserToChatCard";
 export { useChatCreate } from "./hooks/useChatCreate";
 export { useChatCurrent } from "./hooks/useChatCurrent";
 export { useFindRecipient } from "./hooks/useFindRecipient";
+export { MessageCard } from "./ui/MessageCard";

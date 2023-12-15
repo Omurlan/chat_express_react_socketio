@@ -2,13 +2,22 @@ import { useContext } from "react";
 import { ChatContext } from "shared/contexts";
 
 export const useChatCurrent = () => {
-  const { currentChat, currentChatMessagesFetch } = useContext(ChatContext);
+  const {
+    currentChatMessages,
+    currentChat,
+    messageSend,
+    currentChatMessagesFetch,
+  } = useContext(ChatContext);
 
-  const { isLoading, error, data } = currentChat;
+  const { isLoading, error, data, isSending, sendError } = currentChatMessages;
 
   return {
     isLoading,
-    currentChat: data,
+    isSending,
+    sendError,
+    currentChat,
+    messages: data,
+    messageSend,
     currentChatMessagesFetch,
     error,
   };

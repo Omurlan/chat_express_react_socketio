@@ -8,7 +8,7 @@ export const ChatList = (props) => {
   const { chats } = useChatList(user._id);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col w-2/5 gap-3">
       {chats &&
         chats.map(({ _id, members }) => (
           <ChatCard
