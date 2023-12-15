@@ -10,6 +10,21 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const registerUser = useCallback(async (data) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const newUser = await api.post("/users/register", data);
+      setUser(newUser);
+      localStorage.setItem("user", JSON.stringify(newUser));
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const loginUser = useCallback(async (data) => {
     setIsLoading(true);
     setError(null);
@@ -32,7 +47,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, error, loginUser, logoutUser }}
+      value={{ user, isLoading, error, loginUser, logoutUser, registerUser }}
     >
       {children}
     </AuthContext.Provider>

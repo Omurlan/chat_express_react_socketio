@@ -4,9 +4,11 @@ const createChat = async (req, res) => {
   const { firstId, secondId } = req.body;
 
   try {
-    const chat = await chatModel.findOne({
-      members: { $all: [firstId, secondId] },
-    });
+    const chat = await chatModel
+      .findOne({
+        members: { $all: [firstId, secondId] },
+      })
+      .populate("members", "name");
 
     if (chat) {
       return res.json(chat);
@@ -18,7 +20,9 @@ const createChat = async (req, res) => {
 
     const response = await newChat.save();
 
-    res.json(response);
+    const populatedResponse = await response.populate("members", "name");
+
+    res.json(populatedResponse);
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
@@ -35,8 +39,6 @@ const findUserChat = async (req, res) => {
       })
       .populate("members", "name");
 
-    console.log(chats);
-
     res.json(chats);
   } catch (error) {
     console.log(error);
@@ -48,9 +50,11 @@ const findChat = async (req, res) => {
   const { firstId, secondId } = req.params;
 
   try {
-    const chat = await chatModel.findOne({
-      members: { $all: [firstId, secondId] },
-    });
+    const chat = await chatModel
+      .findOne({
+        members: { $all: [firstId, secondId] },
+      })
+      .populate("members", "name");
 
     res.json(chat);
   } catch (error) {
