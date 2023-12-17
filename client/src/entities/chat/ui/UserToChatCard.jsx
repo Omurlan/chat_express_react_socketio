@@ -1,8 +1,13 @@
 import { Avatar, Chip } from "@nextui-org/react";
-import { memo, useCallback } from "react";
+import { memo } from "react";
+import { useChatList } from "../hooks/useChatList";
 
 export const UserToChatCard = memo((props) => {
   const { name, id, onClick } = props;
+
+  const { onlineUsers } = useChatList();
+
+  const isOnline = onlineUsers.some((u) => u.userId === id);
 
   const handleClick = () => {
     onClick(id);
@@ -23,7 +28,7 @@ export const UserToChatCard = memo((props) => {
       }
       size="lg"
     >
-      {name}
+      {name} {isOnline && "online"}
     </Chip>
   );
 });

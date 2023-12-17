@@ -6,6 +6,7 @@ export const UsersToChatList = () => {
   const { usersToChat } = useUsersToChat();
 
   const { chatCreate } = useChatCreate();
+
   const { user } = useUser();
 
   const handleClick = useCallback((recipientId) => {

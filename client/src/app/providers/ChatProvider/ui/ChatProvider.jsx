@@ -4,6 +4,7 @@ import { useCallback, useEffect, useReducer, useState } from "react";
 import { api } from "shared/api";
 import { useUser } from "entities/auth";
 import { createReducer } from "../utils/createReducer";
+import { io } from "socket.io-client";
 
 const initialState = {
   currentChatMessages: {
@@ -124,10 +125,72 @@ const reducer = createReducer(initialState, {
 
 export const ChatProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  const [socket, setSocket] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+
+  const [messageToSend, setMessageToSend] = useState(null);
 
   const { user } = useUser();
+
+  // socket connection
+  useEffect(() => {
+    if (user) {
+      const newSocket = io("http://localhost:6060").connect();
+      setSocket(newSocket);
+    }
+  }, [user]);
+
+  // socket disconnect
+  useEffect(() => {
+    if (socket && socket?.connected && !user) {
+      socket.disconnect();
+    }
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [socket, user]);
+
+  // get online users
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.emit("addNewUser", user?._id);
+
+    socket.on("getOnlineUsers", (response) => {
+      setOnlineUsers(response);
+    });
+
+    return () => {
+      socket.off("getOnlineUsers");
+    };
+  }, [socket]);
+
+  // send message
+  useEffect(() => {
+    if (!socket || !messageToSend || !currentChat) return;
+
+    const recipientId = currentChat?.members?.find(
+      (m) => m._id !== user?._id
+    )?._id;
+
+    socket.emit("sendMessage", { ...messageToSend, recipientId });
+    setMessageToSend(null);
+  }, [socket, messageToSend, currentChat, dispatch]);
+
+  // receive message
+  useEffect(() => {
+    if (!socket || !currentChat) return;
+
+    socket.on("getMessage", (message) => {
+      if (currentChat._id !== message.chatId) return;
+
+      dispatch({ type: "updateCurrentChatMessages", payload: message });
+    });
+  }, [socket, currentChat]);
 
   const chatsFetch = useCallback(
     async (userId) => {
@@ -158,6 +221,7 @@ export const ChatProvider = ({ children }) => {
         text,
       });
 
+      setMessageToSend(response);
       dispatch({ type: "updateCurrentChatMessages", payload: response });
     } catch (error) {
       dispatch({ type: "currentChatMessagesError" });
@@ -228,6 +292,8 @@ export const ChatProvider = ({ children }) => {
         currentChatMessages: state.currentChatMessages,
         chats: state.chats,
         usersToChat: state.usersToChat,
+        socketId: socket?.id ?? null,
+        onlineUsers,
         messageSend,
         chatsFetch,
         chatCreate,

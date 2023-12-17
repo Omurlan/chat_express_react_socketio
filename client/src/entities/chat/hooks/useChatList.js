@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { ChatContext } from "shared/contexts";
 
 export const useChatList = (userId) => {
-  const { chats, chatsFetch } = useContext(ChatContext);
+  const { chats, chatsFetch, onlineUsers } = useContext(ChatContext);
 
   const { isLoading, error, data } = chats;
 
@@ -14,6 +14,7 @@ export const useChatList = (userId) => {
 
   return {
     chats: data,
+    onlineUsers,
     isLoading,
     error,
   };
